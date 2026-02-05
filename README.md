@@ -1,8 +1,10 @@
-# 🫀 OpenHeart
+# 🦞 + 🫀 OpenHeart
 
 **Give your AI a pulse. Make it sense how you feel.**
 
-OpenHeart adds biophysical awareness to AI agents—detecting your stress, focus, and cognitive state from *how* you type, then teaching AI to respond with empathy and context.
+**OpenHeart is a biophysical wrapper for [OpenClaw](https://github.com/openclaw/openclaw).**
+
+It adds awareness to your AI agents—detecting your stress, focus, and cognitive state from *how* you type (and your heart rate), then teaching OpenClaw to respond with empathy and context.
 
 ---
 
@@ -34,18 +36,113 @@ OpenHeart gives AI this same awareness by analyzing **keystroke dynamics**—the
 
 ### How It Works (Simple Version)
 
-```
 1. You type frantically → Fast, erratic keystrokes
-                            ↓
 2. OpenHeart detects stress (0.85 / 1.0)
-                            ↓
 3. AI receives context: "[User is stressed. Be concise.]"
-                            ↓
 4. AI responds: "Found the bug. Line 247. NULL pointer."
-   (Instead of: "Let me explain the entire debugging methodology...")
+
+---
+
+## Quick Start
+
+```bash
+# Clone the repository
+git clone https://github.com/opnheart/openheart.git
+cd openheart
+
+# Install (sets up OpenClaw, Python daemon, and plugin)
+npx openheart install
+
+# Check status
+openheart status
+
+# View logs
+openheart logs
+
+# Simulate stress for testing
+openheart simulate --preset high-stress
 ```
 
-### Privacy-First Design
+---
+
+## Architecture
+
+| Component | Location | Purpose |
+|-----------|----------|---------|
+| **Daemon** | `daemon/` (Python) | Monitors keystrokes, calculates stress |
+| **Plugin** | `plugin/` (TypeScript) | Reads state, injects into OpenClaw prompts |
+| **CLI** | `cli/` (TypeScript) | Install, start/stop daemon, simulate states |
+
+```
+~/.openheart/
+├── config.json      # User configuration
+├── state.json       # Current biometric state (fallback)
+├── state.sock       # Unix socket (real-time, <1ms)
+├── daemon.pid       # Daemon process ID
+└── openheart.log    # Daemon logs
+
+~/.openclaw/plugins/openheart/
+├── plugin.json      # OpenClaw plugin metadata
+└── index.js         # Plugin handler
+```
+
+---
+
+## Biometric Metrics (Digital Kinesics)
+
+| Metric | Description | Stress Correlation |
+|--------|-------------|-------------------|
+| **Dwell Time** | Duration of keypress | Lower when stressed |
+| **Flight Time** | Gap between keys | More erratic when stressed |
+| **Edit Flux** | Backspace ratio | Higher when frustrated |
+| **Rhythmic Jitter** | Variance in intervals | Higher when distracted |
+
+---
+
+## Precepts Injected
+
+Based on biometric state, OpenHeart injects context precepts:
+
+| State | Precept | Effect |
+|-------|---------|--------|
+| `stress_index > 0.7` | `CONCISE_MODE` | Shorter, direct responses |
+| `flow_state == DEEP_FLOW` | `NO_INTERRUPT` | Avoid follow-up questions |
+
+---
+
+## Development
+
+```bash
+# Clone
+git clone https://github.com/opnheart/openheart.git
+cd openheart
+
+# Install dependencies
+npm install
+pip3 install -r requirements.txt
+
+# Build TypeScript
+npm run build
+
+# Run daemon in dev mode
+npm run daemon:dev
+
+# Or directly
+python3 daemon/main.py --dev
+```
+
+---
+
+## macOS Permissions
+
+On macOS, grant Accessibility permissions:
+1. System Preferences → Security & Privacy → Privacy
+2. Select Accessibility
+3. Add your terminal app (Terminal, iTerm2, VS Code)
+
+---
+
+## The Core Idea
 
 **What OpenHeart sees:**
 - ✅ Time between keystrokes (120ms → 80ms → 200ms...)
@@ -127,46 +224,45 @@ AI behavior: Detailed, exploratory, conversational
 ### Architecture Overview
 
 ```
-┌─────────────────────────────────────────────────────────┐
-│                    Your Computer                        │
-├─────────────────────────────────────────────────────────┤
-│                                                          │
-│  ┌──────────────────┐         ┌─────────────────┐      │
-│  │  You Type        │──────→  │ OpenHeart       │      │
-│  │  (Any App)       │         │ Daemon          │      │
-│  └──────────────────┘         │                 │      │
-│                                │ Analyzes:       │      │
-│                                │ • Timing        │      │
-│                                │ • Rhythm        │      │
-│                                │ • Patterns      │      │
-│                                └────────┬────────┘      │
-│                                         │               │
-│                                         │ Writes        │
-│                                         ▼               │
-│                                ┌─────────────────┐      │
-│                                │ state.json      │      │
-│                                │ stress: 0.85    │      │
-│                                │ flow: STRESSED  │      │
-│                                └────────┬────────┘      │
-│                                         │               │
-│                                         │ Reads         │
-│                                         ▼               │
-│                          ┌──────────────────────────┐   │
-│                          │ OpenClaw AI Agent        │   │
-│                          │ + OpenHeart Plugin       │   │
-│                          │                          │   │
-│                          │ Injects into prompt:     │   │
-│                          │ "[User stressed: 0.85]"  │   │
-│                          └──────────┬───────────────┘   │
-│                                     │                   │
-│                                     │ Sends             │
-│                                     ▼                   │
-│                          ┌──────────────────────────┐   │
-│                          │ Claude / GPT            │   │
-│                          │ (Responds with context) │   │
-│                          └─────────────────────────┘   │
-│                                                          │
-└─────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────────┐
+│                         Your Server / Desktop                        │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                       │
+│  ┌──────────────────┐              ┌─────────────────────────┐       │
+│  │  You Type        │──────────→   │ OpenHeart Daemon        │       │
+│  │  (Any App)       │              │ (Python)                │       │
+│  └──────────────────┘              │                         │       │
+│                                    │ Analyzes:               │       │
+│                                    │ • Keystroke timing      │       │
+│                                    │ • Rhythm patterns       │       │
+│                                    │ • Backspace frequency   │       │
+│                                    └───────────┬─────────────┘       │
+│                                                │                      │
+│  ┌──────────────────┐                          │                      │
+│  │ Mobile Device    │                          │                      │
+│  │ (iOS/Android)    │                          ▼                      │
+│  │                  │   HTTP POST    ┌─────────────────────────┐     │
+│  │ HRV / Heart Rate │ ─────────────→ │ ~/.openheart/state.sock │     │
+│  └──────────────────┘                │ (Unix Socket / JSON)    │     │
+│                                      └───────────┬─────────────┘     │
+│                                                  │                    │
+│                                                  │ Reads              │
+│                                                  ▼                    │
+│                           ┌──────────────────────────────────────┐   │
+│                           │ OpenClaw + OpenHeart Plugin          │   │
+│                           │                                      │   │
+│                           │ Injects context into prompt:         │   │
+│                           │ "[User stressed: 0.85, source: hrv]" │   │
+│                           └──────────────────┬───────────────────┘   │
+│                                              │                        │
+│                                              │ Sends                  │
+│                                              ▼                        │
+│                           ┌──────────────────────────────────────┐   │
+│                           │ Claude / GPT                         │   │
+│                           │ (Responds with context awareness)    │   │
+│                           └──────────────────────────────────────┘   │
+│                                                                       │
+└─────────────────────────────────────────────────────────────────────┘
 ```
 
 
@@ -266,7 +362,7 @@ Claude receives:
 
 ---
 
-## Mobile Support: The "Biological Bridge" 📱
+## Support: The "Biological Bridge" 
 
 Sandboxed mobile OSs (iOS/Android) block apps from reading keystrokes globally. OpenHeart solves this with a **Biological Bridge** philosophy.
 
