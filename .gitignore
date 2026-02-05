@@ -1,0 +1,25 @@
+# Node.js
+node_modules/
+dist/
+npm-debug.log
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.venv/
+venv/
+env/
+
+# OpenHeart
+.openheart/
+daemon.pid
+openheart.log
+state.json
+state.sock
+config.json
+
+# OS
+.DS_Store
+Thumbs.db

@@ -266,6 +266,46 @@ Claude receives:
 
 ---
 
+## Mobile Support: The "Biological Bridge" 📱
+
+Sandboxed mobile OSs (iOS/Android) block apps from reading keystrokes globally. OpenHeart solves this with a **Biological Bridge** philosophy.
+
+**The Strategy:**
+- **Desktop:** Digital Kinesics (Keystrokes = Fast, precise, frequent data)
+- **Mobile:** Physiological Data (HRV/Heart Rate = High truth, slower data)
+
+### How to Connect Your iPhone/Apple Watch
+
+We expose an HTTP endpoint (`POST /openheart/biometrics`) that your phone can write to.
+
+#### 1. Create an iOS Shortcut
+Make a shortcut that runs when you open **Telegram** or every X minutes:
+1. **Action:** `Get Latest Health Samples` (Type: Heart Rate Variability)
+2. **Action:** `Get Contents of URL`
+   - **URL:** `https://YOUR_SERVER_IP/openheart/biometrics` (Use HTTPS via Nginx/Caddy or Cloudflare Tunnel)
+   - **Method:** `POST`
+   - **JSON Body:** `{"hrv": HealthSampleValue, "source": "ios_shortcut"}`
+
+#### 2. Android Setup (Tasker / MacroDroid)
+You can use **Tasker**, **MacroDroid**, or **Automate** to push data.
+
+**Example with MacroDroid:**
+1. **Trigger:** Application Launched (Telegram) OR Interval (5 mins)
+2. **Action:** HTTP Request
+   - **URL:** `https://YOUR_SERVER_IP/openheart/biometrics` (Avoid exposing port 3000 directly)
+   - **Method:** `POST`
+   - **Body:** `{"heart_rate": [Battery Level*], "source": "android"}`
+   *(Note: Android privacy restricts raw health access for background apps. You may need a plugin like **AutoWear** or **Google Fit API** to get real HRV, otherwise simulate with battery/steps or manual input widget.)*
+
+#### 3. That's it.
+OpenHeart merges this data.
+- If you're typing at your desk, it uses your **typing rhythm**.
+- If you're walking around on your phone, it uses your **heart rate stress**.
+
+Your AI agent stays context-aware, everywhere.
+
+---
+
 ## Privacy & Security
 
 ### What Gets Monitored

@@ -1,0 +1,16 @@
+# OpenHeart Daemon Dependencies
+
+# Core
+pynput>=1.7.6          # Cross-platform keyboard monitoring
+
+# ML (Phase 2)
+torch>=2.0.0           # PyTorch for transformer model
+numpy>=1.24.0          # Numerical operations
+
+# Utilities
+python-dotenv>=1.0.0   # Environment configuration
+
+# Development
+pytest>=8.0.0          # Testing
+black>=24.0.0          # Code formatting
+mypy>=1.8.0            # Type checking

@@ -1,0 +1,40 @@
+{
+  "name": "openheart",
+  "version": "0.1.0",
+  "description": "Biophysical awareness layer for AI agents - sensing without surveillance",
+  "type": "module",
+  "main": "dist/cli/index.js",
+  "bin": {
+    "openheart": "./dist/cli/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "start": "node dist/cli/index.js",
+    "test": "vitest",
+    "daemon:start": "python3 daemon/main.py",
+    "daemon:dev": "python3 daemon/main.py --dev"
+  },
+  "keywords": [
+    "ai",
+    "agents",
+    "biometrics",
+    "stress-detection",
+    "keystroke-dynamics",
+    "openclaw",
+    "llm"
+  ],
+  "author": "OpenHeart Contributors",
+  "license": "MIT",
+  "dependencies": {
+    "commander": "^12.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.4.0",
+    "vitest": "^2.0.0"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

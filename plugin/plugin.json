@@ -1,0 +1,22 @@
+{
+    "name": "openheart",
+    "version": "0.1.0",
+    "description": "Biophysical awareness for AI agents - injects stress/focus context into prompts",
+    "author": "OpenHeart Contributors",
+    "homepage": "https://github.com/openheart/openheart",
+    "main": "index.js",
+    "openclaw": {
+        "emoji": "💓",
+        "hooks": [
+            "message:pre_process"
+        ],
+        "permissions": {
+            "required": [
+                "context:read",
+                "context:write",
+                "precepts:add"
+            ],
+            "optional": []
+        }
+    }
+}
